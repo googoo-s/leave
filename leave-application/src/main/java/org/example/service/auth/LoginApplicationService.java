@@ -13,7 +13,7 @@ public class LoginApplicationService {
 
 
 
-    public Response login (Person person){
+    public void login (Person person){
         //调用鉴权微服务
 
     }

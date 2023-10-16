@@ -1,8 +1,11 @@
 package org.example.domain.leave.entity;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import lombok.Data;
 import org.example.domain.leave.entity.valueobject.Applicant;
 import org.example.domain.leave.entity.valueobject.Approver;
@@ -20,8 +23,8 @@ public class Leave {
     Approver approver;
     LeaveType type;
     Status status;
-    Date startTime;
-    Date endTime;
+    LocalDate startTime;
+    LocalDate endTime;
     long duration;
     //审批领导的最大级别
     int leaderMaxLevel;
@@ -40,30 +43,30 @@ public class Leave {
         return this;
     }
 
-    public Leave create(){
+    public Leave create() {
         this.setStatus(Status.APPROVING);
-        this.setStartTime(new Date());
+        this.setStartTime(LocalDate.now());
         return this;
     }
 
-    public Leave agree(Approver nextApprover){
+    public Leave agree(Approver nextApprover) {
         this.setStatus(Status.APPROVING);
         this.setApprover(nextApprover);
         return this;
     }
 
-    public Leave reject(Approver approver){
+    public Leave reject(Approver approver) {
         this.setApprover(approver);
         this.setStatus(Status.REJECTED);
         this.setApprover(null);
         return this;
     }
 
-    public Leave finish(){
+    public Leave finish() {
         this.setApprover(null);
         this.setStatus(Status.APPROVED);
-        this.setEndTime(new Date());
-        this.setDuration(this.getEndTime().getTime() - this.getStartTime().getTime());
+        this.setEndTime(LocalDate.now());
+        this.setDuration(this.getStartTime().until(this.getEndTime()).getDays());
         return this;
     }
 }

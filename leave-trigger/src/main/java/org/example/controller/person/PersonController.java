@@ -2,6 +2,7 @@ package org.example.controller.person;
 
 import java.text.ParseException;
 import lombok.extern.slf4j.Slf4j;
+import org.example.assembler.person.PersonAssembler;
 import org.example.domain.person.entity.Person;
 import org.example.service.person.PersonApplicationService;
 import org.example.types.auth.PersonDTO;

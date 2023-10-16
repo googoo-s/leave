@@ -1,7 +1,7 @@
 package org.example.domain.rule.service;
 
-import ddd.leave.domain.rule.entity.ApprovalRule;
-import ddd.leave.domain.rule.repository.facade.ApprovalRuleRepositoryInterface;
+import org.example.domain.rule.entity.ApprovalRule;
+import org.example.domain.rule.repository.facade.ApprovalRuleRepositoryInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

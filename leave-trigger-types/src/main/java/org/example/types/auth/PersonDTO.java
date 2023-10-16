@@ -7,11 +7,18 @@ import lombok.Data;
  */
 @Data
 public class PersonDTO {
-    String personId;
-    String personName;
-    String roleId;
-    String personType;
-    String createTime;
-    String lastModifyTime;
-    String status;
+
+    private String personId;
+
+    private String personName;
+
+    private String roleId;
+
+    private String personType;
+
+    private String createTime;
+
+    private String lastModifyTime;
+
+    private String status;
 }

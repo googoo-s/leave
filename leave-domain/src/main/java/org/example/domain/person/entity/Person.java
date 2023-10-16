@@ -1,10 +1,11 @@
 package org.example.domain.person.entity;
 
-import ddd.leave.domain.person.entity.valueobject.PersonStatus;
-import ddd.leave.domain.person.entity.valueobject.PersonType;
-import java.util.Date;
-import java.util.List;
 import lombok.Data;
+import org.example.domain.person.entity.valueobject.PersonStatus;
+import org.example.domain.person.entity.valueobject.PersonType;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class Person {
@@ -14,24 +15,24 @@ public class Person {
     PersonType personType;
     List<Relationship> relationships;
     int roleLevel;
-    Date createTime;
-    Date lastModifyTime;
+    LocalDateTime createTime;
+    LocalDateTime lastModifyTime;
     PersonStatus status;
 
     public Person create(){
-        this.createTime = new Date();
+        this.createTime = LocalDateTime.now();
         this.status = PersonStatus.ENABLE;
         return this;
     }
 
     public Person enable(){
-        this.lastModifyTime = new Date();
+        this.lastModifyTime = LocalDateTime.now();
         this.status = PersonStatus.ENABLE;
         return this;
     }
 
     public Person disable(){
-        this.lastModifyTime = new Date();
+        this.lastModifyTime = LocalDateTime.now();
         this.status = PersonStatus.DISABLE;
         return this;
     }

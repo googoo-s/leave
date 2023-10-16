@@ -3,8 +3,11 @@ package org.example.controller.leave;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.example.assembler.leave.LeaveAssembler;
+import org.example.domain.leave.entity.Leave;
 import org.example.service.leave.LeaveApplicationService;
 import org.example.types.common.Response;
+import org.example.types.leave.LeaveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +51,7 @@ public class LeaveController {
     @PostMapping("/{leaveId}")
     public Response findById(@PathVariable String leaveId){
         Leave leave = leaveApplicationService.getLeaveInfo(leaveId);
-        return Response.ok(LeaveAssembler.toDTO(leave));
+        return Response.<LeaveDTO>ok(LeaveAssembler.toDTO(leave));
     }
 
     /**
@@ -59,7 +62,9 @@ public class LeaveController {
     @PostMapping("/query/applicant/{applicantId}")
     public Response queryByApplicant(@PathVariable String applicantId){
         List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApplicant(applicantId);
-        List<LeaveDTO> leaveDTOList = leaveList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
+        List<LeaveDTO> leaveDTOList = leaveList.stream()
+                .map(leave -> LeaveAssembler.toDTO(leave))
+                .collect(Collectors.toList());
         return Response.ok(leaveDTOList);
     }
 
@@ -71,7 +76,9 @@ public class LeaveController {
     @PostMapping("/query/approver/{approverId}")
     public Response queryByApprover(@PathVariable String approverId){
         List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
-        List<LeaveDTO> leaveDTOList = leaveList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
+        List<LeaveDTO> leaveDTOList = leaveList.stream()
+                .map(leave -> LeaveAssembler.toDTO(leave))
+                .collect(Collectors.toList());
         return Response.ok(leaveDTOList);
     }
 }
