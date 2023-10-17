@@ -1,10 +1,9 @@
 package org.example.domain.person.service;
 
-import java.util.Date;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.person.entity.Person;
-import org.example.domain.person.repository.facade.PersonRepository;
-import org.example.domain.person.repository.po.PersonPO;
+import org.example.domain.person.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,38 +13,34 @@ public class PersonDomainService {
 
     @Autowired
     PersonRepository personRepository;
-    @Autowired
-    PersonFactory personFactory;
 
 
     public void create(Person person) {
-        PersonPO personPO = personRepository.findById(person.getPersonId());
-        if (null == personPO) {
-            throw new RuntimeException("Person already exists");
-        }
-        person.create();
-        personRepository.insert(personFactory.createPersonPO(person));
+        person.init();
+        personRepository.insert(person);
     }
 
     public void update(Person person) {
-        person.setLastModifyTime(new Date());
-        personRepository.update(personFactory.createPersonPO(person));
+        if (Objects.isNull(person.getId())) {
+            throw new RuntimeException("id不能为空");
+        }
+        person.markModify();
+        personRepository.updateById(person);
     }
 
     public void deleteById(String personId) {
-        PersonPO personPO = personRepository.findById(personId);
-        Person person = personFactory.getPerson(personPO);
-        person.disable();
-        personRepository.update(personFactory.createPersonPO(person));
+        Person person = personRepository.findById(personId);
+        person.delete();
+        personRepository.updateById(person);
     }
 
-    public Person findById(String userId) {
-        PersonPO personPO = personRepository.findById(userId);
-        return personFactory.getPerson(personPO);
+    public void addSubordinate(Person leader, Person subordinate) {
+        leader.addSubordinate(subordinate);
     }
 
     /**
-     * find leader with applicant, if leader level bigger then leaderMaxLevel return null, else return Approver from leader;
+     * find leader with applicant, if leader level bigger then leaderMaxLevel return null, else return Approver from
+     * leader;
      *
      * @param applicantId
      * @param leaderMaxLevel
@@ -61,7 +56,8 @@ public class PersonDomainService {
     }
 
     /**
-     * find leader with current approver, if leader level bigger then leaderMaxLevel return null, else return Approver from leader;
+     * find leader with current approver, if leader level bigger then leaderMaxLevel return null, else return Approver
+     * from leader;
      *
      * @param currentApproverId
      * @param leaderMaxLevel

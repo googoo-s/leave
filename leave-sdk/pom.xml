@@ -28,7 +28,7 @@
     </dependency>
     <dependency>
       <groupId>org.example</groupId>
-      <artifactId>leave-trigger-types</artifactId>
+      <artifactId>leave-application-types</artifactId>
     </dependency>
   </dependencies>
 

@@ -1,38 +1,37 @@
 package org.example.domain.leave.entity;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
 import lombok.Data;
+import org.example.common.domain.AggregateRoot;
 import org.example.domain.leave.entity.valueobject.Applicant;
 import org.example.domain.leave.entity.valueobject.Approver;
-import org.example.domain.leave.entity.valueobject.LeaveType;
-import org.example.domain.leave.entity.valueobject.Status;
+import org.example.shared.leave.enums.LeaveType;
+import org.example.shared.leave.enums.Status;
 
 /**
  * 请假单信息
+ * @author sherry
  */
 @Data
-public class Leave {
+public class Leave implements AggregateRoot {
 
-    String id;
-    Applicant applicant;
-    Approver approver;
-    LeaveType type;
-    Status status;
-    LocalDate startTime;
-    LocalDate endTime;
-    long duration;
+    private String id;
+    private Applicant applicant;
+    private Approver approver;
+    private LeaveType type;
+    private Status status;
+    private LocalDate startTime;
+    private LocalDate endTime;
+    private long duration;
     //审批领导的最大级别
-    int leaderMaxLevel;
-    ApprovalInfo currentApprovalInfo;
-    List<ApprovalInfo> historyApprovalInfos;
+    private int leaderMaxLevel;
+    private ApprovalInfo currentApprovalInfo;
+    private List<ApprovalInfo> historyApprovalInfos;
 
     public long getDuration() {
-        return endTime.getTime() - startTime.getTime();
+        return startTime.until(endTime).getDays();
     }
 
     public Leave addHistoryApprovalInfo(ApprovalInfo approvalInfo) {

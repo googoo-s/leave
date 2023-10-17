@@ -25,4 +25,12 @@ public class LeaveEvent extends DomainEvent {
         event.setData(JSON.toJSONString(leave));
         return event;
     }
+
+    public static enum LeaveEventType {
+        CREATE_EVENT,
+        AGREE_EVENT,
+        REJECT_EVENT,
+        APPROVED_EVENT
+    }
+
 }

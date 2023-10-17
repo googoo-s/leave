@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.shared.person.enums.PersonType;
 
 /**
  * @author sherry
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Applicant {
 
-    String personId;
-    String personName;
-    String personType;
+    private String personId;
+    private String personName;
+    private PersonType personType;
 }

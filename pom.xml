@@ -16,7 +16,7 @@
     <module>leave-domain</module>
     <module>leave-infrastructure</module>
     <module>leave-domain-shared</module>
-    <module>leave-trigger-types</module>
+    <module>leave-application-types</module>
   </modules>
 
   <properties>
@@ -136,7 +136,7 @@
 
       <dependency>
         <groupId>org.example</groupId>
-        <artifactId>leave-trigger-types</artifactId>
+        <artifactId>leave-application-types</artifactId>
         <version>${project.version}</version>
       </dependency>
 

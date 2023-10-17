@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
  * @author
  */
 public class DateUtil {
+
+    public static final LocalDateTime DEFAULT_DATE_TIME = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
     private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
     private static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
 

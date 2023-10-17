@@ -1,11 +1,14 @@
 package org.example.service.leave;
 
+import org.example.assembler.leave.LeaveAssembler;
 import org.example.domain.leave.LeaveDomainService;
 import org.example.domain.leave.entity.Leave;
 import org.example.domain.leave.entity.valueobject.Approver;
 import org.example.domain.person.entity.Person;
 import org.example.domain.person.service.PersonDomainService;
-import org.example.domain.rule.service.ApprovalRuleDomainService;
+import org.example.domain.leave.ApprovalRuleDomainService;
+import org.example.types.leave.LeaveDto;
+import org.example.types.leave.ro.CreateLeaveRo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +34,11 @@ public class LeaveApplicationService {
      * 创建一个请假申请并为审批人生成任务
      * @param leave
      */
-    public void createLeaveInfo(Leave leave){
+    public void createLeaveInfo(CreateLeaveRo createLeaveRo){
+        Leave leave = LeaveAssembler.toDO(createLeaveRo);
         //get approval leader max level by rule
-        int leaderMaxLevel = approvalRuleDomainService.getLeaderMaxLevel(leave.getApplicant().getPersonType(), leave.getType().toString(), leave.getDuration());
+        int leaderMaxLevel = approvalRuleDomainService.getLeaderMaxLevel(
+                leave.getApplicant().getPersonType(), leave.getType().toString(), leave.getDuration());
         //find next approver
         Person approver = personDomainService.findFirstApprover(leave.getApplicant().getPersonId(), leaderMaxLevel);
         leaveDomainService.createLeave(leave, leaderMaxLevel, Approver.fromPerson(approver));

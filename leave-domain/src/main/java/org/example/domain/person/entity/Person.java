@@ -1,39 +1,64 @@
 package org.example.domain.person.entity;
 
-import lombok.Data;
-import org.example.domain.person.entity.valueobject.PersonStatus;
-import org.example.domain.person.entity.valueobject.PersonType;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.example.common.domain.AggregateRoot;
+import org.example.shared.person.enums.PersonStatus;
+import org.example.shared.person.enums.PersonType;
+import org.example.util.DateUtil;
+import org.springframework.util.CollectionUtils;
 
+/**
+ * @author sherry
+ */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class Person {
+public class Person extends AggregateRoot {
 
-    String personId;
-    String personName;
-    PersonType personType;
-    List<Relationship> relationships;
-    int roleLevel;
-    LocalDateTime createTime;
-    LocalDateTime lastModifyTime;
-    PersonStatus status;
+    private String personName;
 
-    public Person create(){
-        this.createTime = LocalDateTime.now();
+    private PersonType personType;
+
+    private int roleLevel;
+
+    private PersonStatus status;
+
+
+
+    private List<Relationship> relationships;
+
+
+    public void init() {
+        this.setCreateTime(LocalDateTime.now());
+        this.setLastModifyTime(LocalDateTime.now());
+        this.setDeleteTime(DateUtil.DEFAULT_DATE_TIME);
+        this.relationships = null;
         this.status = PersonStatus.ENABLE;
-        return this;
     }
 
-    public Person enable(){
-        this.lastModifyTime = LocalDateTime.now();
+
+    public void enable() {
+        markModify();
         this.status = PersonStatus.ENABLE;
-        return this;
     }
 
-    public Person disable(){
-        this.lastModifyTime = LocalDateTime.now();
+
+    public void disable() {
+        markModify();
         this.status = PersonStatus.DISABLE;
-        return this;
+    }
+
+    public void markModify() {
+        this.setLastModifyTime(LocalDateTime.now());
+    }
+
+    public void delete() {
+        this.setDeleteTime(LocalDateTime.now());
+    }
+
+    public void addSubordinate(Person subordinate) {
+        if (CollectionUtils.isEmpty(relationships))
     }
 }
