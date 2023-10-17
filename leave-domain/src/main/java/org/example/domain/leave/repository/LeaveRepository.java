@@ -1,7 +1,7 @@
 package org.example.domain.leave.repository;
 
-import ddd.leave.domain.leave.repository.po.LeaveEventPO;
-import ddd.leave.domain.leave.repository.po.LeavePO;
+import org.example.domain.leave.entity.Leave;
+
 import java.util.List;
 
 /**
@@ -9,14 +9,13 @@ import java.util.List;
  */
 public interface LeaveRepository {
 
-    void save(LeavePO leavePO);
+    void save(Leave leave);
 
-    void saveEvent(LeaveEventPO leaveEventPO);
 
-    LeavePO findById(String id);
+    Leave findById(Integer id);
 
-    List<LeavePO> queryByApplicantId(String applicantId);
+    List<Leave> queryByApplicantId(Integer applicantId);
 
-    List<LeavePO> queryByApproverId(String approverId);
+    List<Leave> queryByApproverId(Integer approverId);
 
 }

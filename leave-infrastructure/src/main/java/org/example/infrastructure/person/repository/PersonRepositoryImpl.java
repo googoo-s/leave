@@ -1,6 +1,5 @@
 package org.example.infrastructure.person.repository;
 
-import ddd.leave.domain.person.repository.po.PersonPO;
 import org.example.domain.person.entity.Person;
 import org.example.domain.person.repository.PersonRepository;
 import org.example.infrastructure.person.converter.PersonFactory;
@@ -22,27 +21,18 @@ public class PersonRepositoryImpl implements PersonRepository {
     private PersonFactory personFactory;
 
     @Override
-    public void insert(Person person) {
-        PersonPo personPo = personFactory.createPersonPo(person);
+    public void save(Person person) {
+        PersonPo personPo = personFactory.personPoFromDo(person);
         personDao.save(personPo);
     }
 
-    @Override
-    public void updateById(Person person) {
-        PersonPo personPo = personFactory.createPersonPo(person);
-        personDao.save(personPo);
-    }
 
     @Override
-    public Person findById(String id) {
+    public Person findById(Integer id) {
         PersonPo personPo = personDao.findById(id).orElseThrow(() -> new RuntimeException("未找到用户"));
-        return personFactory.createPerson(personPo);
+        return personFactory.personDoFromPo(personPo);
 
     }
 
-    @Override
-    public Person findLeaderByPersonId(String personId) {
-        return personDao.findLeaderByPersonId(personId);
-    }
 
 }

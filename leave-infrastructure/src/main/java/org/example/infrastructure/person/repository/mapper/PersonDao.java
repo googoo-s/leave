@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
  * @author sherry
  */
 @Repository
-public interface PersonDao extends JpaRepository<PersonPo, String> {
+public interface PersonDao extends JpaRepository<PersonPo, Integer> {
 
     @Query(value = "select p from PersonPO  p where p.relationshipPO.personId=?1")
-    PersonPO findLeaderByPersonId(String personId);
+    PersonPo findLeaderByPersonId(String personId);
 }

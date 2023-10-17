@@ -1,20 +1,15 @@
 package org.example.controller.leave;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.example.assembler.leave.LeaveAssembler;
-import org.example.domain.leave.entity.Leave;
 import org.example.service.leave.LeaveApplicationService;
 import org.example.types.common.Response;
-import org.example.types.leave.LeaveDto;
 import org.example.types.leave.ro.CreateLeaveRo;
+import org.example.types.leave.ro.SubmitApprovalRo;
+import org.example.types.leave.vo.LeaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author
@@ -29,56 +24,45 @@ public class LeaveController {
     LeaveApplicationService leaveApplicationService;
 
     @PostMapping
-    public Response createLeaveInfo(CreateLeaveRo createLeaveRo){
-        leaveApplicationService.createLeaveInfo(leave);
+    public Response<?> createLeaveInfo(@RequestBody CreateLeaveRo createLeaveRo) {
+        leaveApplicationService.createLeaveInfo(createLeaveRo);
         return Response.ok();
     }
 
-    @PutMapping
-    public Response updateLeaveInfo(LeaveDto leaveDTO){
-        Leave leave = LeaveAssembler.toDO(leaveDTO);
-        leaveApplicationService.updateLeaveInfo(leave);
-        return Response.ok();
-    }
 
-    @PostMapping("/submit")
-    public Response submitApproval(LeaveDto leaveDTO){
-        Leave leave = LeaveAssembler.toDO(leaveDTO);
-        leaveApplicationService.submitApproval(leave);
+    @PostMapping("/{leaveId}/submit")
+    public Response<?> submitApproval(@PathVariable("leaveId") Integer leaveId, @RequestBody SubmitApprovalRo submitApprovalRo) {
+        leaveApplicationService.submitApproval(leaveId,submitApprovalRo);
         return Response.ok();
     }
 
     @PostMapping("/{leaveId}")
-    public Response findById(@PathVariable String leaveId){
-        Leave leave = leaveApplicationService.getLeaveInfo(leaveId);
-        return Response.<LeaveDto>ok(LeaveAssembler.toDTO(leave));
+    public Response<LeaveVo> findById(@PathVariable("leaveId") Integer leaveId) {
+        LeaveVo leave = leaveApplicationService.getLeaveInfo(leaveId);
+        return Response.<LeaveVo>ok(leave);
     }
 
     /**
      * 根据申请人查询所有请假单
+     *
      * @param applicantId
      * @return
      */
     @PostMapping("/query/applicant/{applicantId}")
-    public Response queryByApplicant(@PathVariable String applicantId){
-        List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApplicant(applicantId);
-        List<LeaveDto> leaveDtoList = leaveList.stream()
-                .map(leave -> LeaveAssembler.toDTO(leave))
-                .collect(Collectors.toList());
-        return Response.ok(leaveDtoList);
+    public Response<List<LeaveVo>> queryByApplicant(@PathVariable(value = "applicantId") Integer applicantId) {
+        List<LeaveVo> leaveList = leaveApplicationService.queryLeaveInfosByApplicant(applicantId);
+        return Response.<List<LeaveVo>>ok(leaveList);
     }
 
     /**
      * 根据审批人id查询待审批请假单（待办任务）
+     *
      * @param approverId
      * @return
      */
     @PostMapping("/query/approver/{approverId}")
-    public Response queryByApprover(@PathVariable String approverId){
-        List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
-        List<LeaveDto> leaveDtoList = leaveList.stream()
-                .map(leave -> LeaveAssembler.toDTO(leave))
-                .collect(Collectors.toList());
-        return Response.ok(leaveDtoList);
+    public Response<List<LeaveVo>> queryByApprover(@PathVariable(value = "approverId") Integer approverId) {
+        List<LeaveVo> leaveList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
+        return Response.<List<LeaveVo>>ok(leaveList);
     }
 }

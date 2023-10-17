@@ -8,12 +8,9 @@ import org.example.domain.person.entity.Person;
  */
 public interface PersonRepository {
 
-    void insert(Person person);
+    void save(Person person);
 
-    void updateById(Person person);
 
-    Person findById(String id);
-
-    PersonPO findLeaderByPersonId(String personId);
+    Person findById(Integer id);
 
 }

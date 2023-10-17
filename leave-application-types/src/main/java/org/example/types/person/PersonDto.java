@@ -1,4 +1,4 @@
-package org.example.types.auth;
+package org.example.types.person;
 
 import lombok.Data;
 

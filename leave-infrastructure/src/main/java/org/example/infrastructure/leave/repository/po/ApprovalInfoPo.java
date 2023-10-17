@@ -1,11 +1,10 @@
 package org.example.infrastructure.leave.repository.po;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import lombok.Data;
 import org.example.common.repository.BaseEntity;
-import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.Entity;
+import java.time.LocalDateTime;
 
 /**
  * @author sherry
@@ -14,18 +13,18 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 public class ApprovalInfoPo extends BaseEntity {
 
-    private String leaveId;
+    private Integer leaveId;
 
-    private String applicantId;
+    private Integer seq;
 
-    private String approverId;
-
-    private int approverLevel;
+    private Integer approverId;
 
     private String approverName;
 
+    private String approvalType;
+
     private String msg;
 
-    private long time;
+    private LocalDateTime approveTime;
 
 }

@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LeaveDao extends JpaRepository<LeavePo, String> {
+public interface LeaveDao extends JpaRepository<LeavePo, Integer> {
 
-    List<LeavePo> queryByApplicantId(String applicantId);
+    List<LeavePo> queryByApplicantId(Integer applicantId);
 
-    List<LeavePo> queryByApproverId(String approverId);
+    List<LeavePo> queryByApproverId(Integer approverId);
 }

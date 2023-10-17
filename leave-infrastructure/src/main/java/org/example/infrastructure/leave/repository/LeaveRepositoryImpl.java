@@ -1,15 +1,18 @@
 package org.example.infrastructure.leave.repository;
 
-import java.util.List;
+import org.example.domain.leave.entity.Leave;
 import org.example.domain.leave.repository.LeaveRepository;
+import org.example.infrastructure.leave.converter.LeaveFactory;
 import org.example.infrastructure.leave.repository.mapper.ApprovalInfoDao;
 import org.example.infrastructure.leave.repository.mapper.LeaveDao;
-import org.example.infrastructure.leave.repository.mapper.LeaveEventDao;
 import org.example.infrastructure.leave.repository.po.ApprovalInfoPo;
-import org.example.infrastructure.leave.repository.po.LeaveEventPo;
 import org.example.infrastructure.leave.repository.po.LeavePo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * persist entity and handle event in repository
@@ -22,46 +25,46 @@ public class LeaveRepositoryImpl implements LeaveRepository {
     @Autowired
     ApprovalInfoDao approvalInfoDao;
     @Autowired
-    LeaveEventDao leaveEventDao;
+    LeaveFactory leaveFactory;
 
-    public void save(LeavePo leavePO) {
-        //persist leave entity
-        leaveDao.save(leavePO);
-       //set leave_id for approvalInfoPO after save leavePO
-        leavePO.getHistoryApprovalInfoPOList().stream().forEach(approvalInfoPO -> approvalInfoPO.setLeaveId(leavePO.getId()));
-        approvalInfoDao.saveAll(leavePO.getHistoryApprovalInfoPOList());
+
+    public void save(Leave leave) {
+        LeavePo leavePo = leaveFactory.leavePoFromDo(leave);
+        leaveDao.save(leavePo);
+        if (!CollectionUtils.isEmpty(leave.getHistoryApprovalInfos())) {
+            List<ApprovalInfoPo> approvalInfoPoList = leave.getHistoryApprovalInfos().stream()
+                    .map(approvalInfoPO -> leaveFactory.approvalInfoPoFromDo(leavePo, approvalInfoPO))
+                    .collect(Collectors.toList());
+            approvalInfoDao.saveAll(approvalInfoPoList);
+        }
     }
 
-    public void saveEvent(LeaveEventPo leaveEventPO){
-        leaveEventDao.save(leaveEventPO);
+
+    @Override
+    public Leave findById(Integer id) {
+        LeavePo leavePo = leaveDao.findById(id).orElseThrow(() -> new RuntimeException("leave not found"));
+        List<ApprovalInfoPo> approvalInfoPos = approvalInfoDao.queryByLeaveId(leavePo.getId());
+        return leaveFactory.leaveDoFromPo(leavePo, approvalInfoPos);
     }
 
     @Override
-    public LeavePo findById(String id) {
-        return leaveDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("leave not found"));
-    }
-
-    @Override
-    public List<LeavePo> queryByApplicantId(String applicantId) {
+    public List<Leave> queryByApplicantId(Integer applicantId) {
         List<LeavePo> leavePoList = leaveDao.queryByApplicantId(applicantId);
-        leavePoList.stream()
-                .forEach(leavePo -> {
+        return leavePoList.stream()
+                .map(leavePo -> {
                     List<ApprovalInfoPo> approvalInfoPoList = approvalInfoDao.queryByLeaveId(leavePo.getId());
-                    leavePo.setHistoryApprovalInfoPOList(approvalInfoPoList);
-                });
-        return leavePoList;
+                    return leaveFactory.leaveDoFromPo(leavePo, approvalInfoPoList);
+                }).collect(Collectors.toList());
     }
 
     @Override
-    public List<LeavePo> queryByApproverId(String approverId) {
+    public List<Leave> queryByApproverId(Integer approverId) {
         List<LeavePo> leavePoList = leaveDao.queryByApproverId(approverId);
-        leavePoList.stream()
-                .forEach(leavePo -> {
+        return leavePoList.stream()
+                .map(leavePo -> {
                     List<ApprovalInfoPo> approvalInfoPoList = approvalInfoDao.queryByLeaveId(leavePo.getId());
-                    leavePo.setHistoryApprovalInfoPOList(approvalInfoPoList);
-                });
-        return leavePoList;
+                    return leaveFactory.leaveDoFromPo(leavePo, approvalInfoPoList);
+                }).collect(Collectors.toList());
     }
 
 }

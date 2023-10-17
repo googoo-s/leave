@@ -1,10 +1,11 @@
 package org.example.infrastructure.person.repository.po;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.example.common.repository.BaseEntity;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author sherry
@@ -15,7 +16,8 @@ import org.example.common.repository.BaseEntity;
 @Table(name = "person")
 public class PersonPo extends BaseEntity {
     private String personName;
-    private String personType;
-    private int roleLevel;
-    private String status;
+    private Integer leaderId;
+    private String province;
+    private String city;
+    private String exactAddress;
 }

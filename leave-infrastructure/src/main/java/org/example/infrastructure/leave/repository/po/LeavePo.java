@@ -1,12 +1,11 @@
 package org.example.infrastructure.leave.repository.po;
 
-import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import org.example.common.repository.BaseEntity;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.time.LocalDate;
 
 /**
  * @author sherry
@@ -14,20 +13,14 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "Leave")
 @Data
-public class LeavePo {
-
-    @Id
-    @GenericGenerator(name="idGenerator", strategy="uuid")
-    @GeneratedValue(generator="idGenerator")
-    private String id;
-    private String applicantId;
+public class LeavePo extends BaseEntity {
+    private Integer applicantId;
     private String applicantName;
-    private String applicantType;
-    private String approverId;
+    private Integer approverId;
     private String approverName;
-    private String leaveType;
+    private String content;
     private String status;
     private LocalDate startTime;
     private LocalDate endTime;
-    private long duration;
+    private Integer maxAgreeCount;
 }

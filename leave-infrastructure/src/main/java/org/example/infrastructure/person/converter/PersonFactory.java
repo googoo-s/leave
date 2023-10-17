@@ -1,36 +1,38 @@
 package org.example.infrastructure.person.converter;
 
 import org.example.domain.person.entity.Person;
+import org.example.domain.person.entity.valueobject.Address;
 import org.example.infrastructure.person.repository.po.PersonPo;
-import org.example.shared.person.enums.PersonStatus;
-import org.example.shared.person.enums.PersonType;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 /**
  * @author sherry
  */
 @Service
 public class PersonFactory {
-    public PersonPo createPersonPo(Person person){
+    public PersonPo personPoFromDo(Person person){
         PersonPo personPo = new PersonPo();
         personPo.setId(person.getId());
-        personPo.setPersonName(person.getPersonName());
-        personPo.setRoleLevel(person.getRoleLevel());
-        personPo.setPersonType(person.getPersonType().name());
-        personPo.setStatus(person.getStatus().name());
         personPo.setCreateTime(person.getCreateTime());
         personPo.setLastModifyTime(person.getLastModifyTime());
         personPo.setDeleteTime(person.getDeleteTime());
+        personPo.setPersonName(person.getPersonName());
+        personPo.setLeaderId(person.getLeaderId());
+        personPo.setProvince(Optional.ofNullable(person.getAddress()).map(Address::getProvince).orElse(null));
+        personPo.setCity(Optional.ofNullable(person.getAddress()).map(Address::getCity).orElse(null));
+        personPo.setExactAddress(Optional.ofNullable(person.getAddress()).map(Address::getExactAddress).orElse(null));
         return personPo;
     }
 
-    public Person createPerson(PersonPo po){
-        Person person = new Person();
-        person.setId(po.getId());
-        person.setPersonType(PersonType.fromName(po.getPersonType()));
-        person.setRoleLevel(po.getRoleLevel());
-        person.setPersonName(po.getPersonName());
-        person.setStatus(PersonStatus.fromName(po.getStatus()));
+    public Person personDoFromPo(PersonPo po){
+        Address address = Address.builder()
+                .province(po.getProvince())
+                .city(po.getCity())
+                .exactAddress(po.getExactAddress())
+                .build();
+        Person person = new Person(po.getLeaderId(),po.getPersonName(),address);
         person.setCreateTime(po.getCreateTime());
         person.setLastModifyTime(po.getLastModifyTime());
         person.setDeleteTime(po.getDeleteTime());

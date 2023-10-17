@@ -1,21 +1,18 @@
 package org.example.domain.leave.entity.valueobject;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.example.shared.person.enums.PersonType;
+import lombok.Getter;
 
 /**
  * @author sherry
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class Applicant {
 
-    private String personId;
+    private Integer personId;
     private String personName;
-    private PersonType personType;
+
+    public Applicant(Integer personId, String personName) {
+        this.personId = personId;
+        this.personName = personName;
+    }
 }

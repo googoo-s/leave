@@ -1,20 +1,20 @@
 package org.example.infrastructure.leave.converter;
 
-import com.alibaba.fastjson.JSON;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.example.domain.leave.entity.ApprovalInfo;
 import org.example.domain.leave.entity.Leave;
 import org.example.domain.leave.entity.valueobject.Applicant;
 import org.example.domain.leave.entity.valueobject.Approver;
-import org.example.domain.leave.event.LeaveEvent;
 import org.example.infrastructure.leave.repository.po.ApprovalInfoPo;
-import org.example.infrastructure.leave.repository.po.LeaveEventPo;
 import org.example.infrastructure.leave.repository.po.LeavePo;
+import org.example.shared.leave.enums.ApprovalType;
 import org.example.shared.leave.enums.Status;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author sherry
@@ -22,80 +22,73 @@ import org.springframework.stereotype.Service;
 @Service
 public class LeaveFactory {
 
-    public LeavePo createLeavePo(Leave leave) {
+    public LeavePo leavePoFromDo(Leave leave) {
         LeavePo leavePo = new LeavePo();
-        leavePo.setId(UUID.randomUUID().toString());
+        leavePo.setId(leave.getId());
+        leavePo.setCreateTime(leave.getCreateTime());
+        leavePo.setLastModifyTime(leave.getLastModifyTime());
+        leavePo.setDeleteTime(leave.getDeleteTime());
         leavePo.setApplicantId(leave.getApplicant().getPersonId());
         leavePo.setApplicantName(leave.getApplicant().getPersonName());
-        leavePo.setApproverId(leave.getApprover().getPersonId());
-        leavePo.setApproverName(leave.getApprover().getPersonName());
+        leavePo.setApproverId(Optional.ofNullable(leave.getApprover()).map(Approver::getPersonId).orElse(null));
+        leavePo.setApproverName(Optional.ofNullable(leave.getApprover()).map(Approver::getPersonName).orElse(null));
+        leavePo.setContent(leave.getContent());
         leavePo.setStartTime(leave.getStartTime());
         leavePo.setStatus(leave.getStatus().name());
-        List<ApprovalInfoPo> historyApprovalInfoPoList = approvalInfoPoListFromDo(leave);
+        leavePo.setMaxAgreeCount(leave.getMaxAgreeCount());
         return leavePo;
     }
 
-    public Leave getLeave(LeavePo leavePo) {
-        Leave leave = new Leave();
-        Applicant applicant = Applicant.builder()
-                .personId(leavePo.getApplicantId())
-                .personName(leavePo.getApplicantName())
-                .build();
-        leave.setApplicant(applicant);
-        Approver approver = Approver.builder()
-                .personId(leavePo.getApproverId())
-                .personName(leavePo.getApproverName())
-                .build();
-        leave.setApprover(approver);
-        leave.setStartTime(leavePo.getStartTime());
-        leave.setStatus(Status.fromName(leavePo.getStatus()));
+
+
+    public Leave leaveDoFromPo(LeavePo leavePo, List<ApprovalInfoPo> historyApprovalInfoPos) {
+        Applicant applicant = new Applicant(leavePo.getApplicantId(), leavePo.getApplicantName());
+        Approver approver = new Approver(leavePo.getApproverId(), leavePo.getApproverName());
+        Leave leave = new Leave(applicant, approver, leavePo.getContent(), Status.fromName(leavePo.getStatus()), leavePo.getStartTime(), leavePo.getEndTime(), leavePo.getMaxAgreeCount(), approvalInfoDosFromPos(historyApprovalInfoPos));
+        leave.setId(leavePo.getId());
+        leave.setCreateTime(leavePo.getCreateTime());
+        leave.setLastModifyTime(leavePo.getLastModifyTime());
+        leave.setDeleteTime(leavePo.getDeleteTime());
         return leave;
     }
 
-    public LeaveEventPo createLeaveEventPo(LeaveEvent leaveEvent){
-        LeaveEventPo eventPo = new LeaveEventPo();
-        eventPo.setLeaveEventType(leaveEvent.getLeaveEventType().name());
-        eventPo.setSource(leaveEvent.getSource());
-        eventPo.setTimestamp(leaveEvent.getTimestamp());
-        eventPo.setData(JSON.toJSONString(leaveEvent.getData()));
-        return eventPo;
-    }
 
-    private List<ApprovalInfoPo> approvalInfoPoListFromDo(Leave leave) {
-        return leave.getHistoryApprovalInfos()
-                .stream()
-                .map(this::approvalInfoPoFromDo)
-                .collect(Collectors.toList());
-    }
-
-    private ApprovalInfoPo approvalInfoPoFromDo(ApprovalInfo approvalInfo){
+    public ApprovalInfoPo approvalInfoPoFromDo(LeavePo leavePo, ApprovalInfo approvalInfo) {
         ApprovalInfoPo po = new ApprovalInfoPo();
+        po.setId(approvalInfo.getId());
+        po.setCreateTime(approvalInfo.getCreateTime());
+        po.setLastModifyTime(approvalInfo.getLastModifyTime());
+        po.setDeleteTime(approvalInfo.getDeleteTime());
+        po.setLeaveId(leavePo.getId());
+        po.setSeq(approvalInfo.getSeq());
         po.setApproverId(approvalInfo.getApprover().getPersonId());
-        po.setApproverLevel(approvalInfo.getApprover().getLevel());
         po.setApproverName(approvalInfo.getApprover().getPersonName());
-        po.setApprovalInfoId(approvalInfo.getApprovalInfoId());
+        po.setApprovalType(approvalInfo.getApprovalType().name());
         po.setMsg(approvalInfo.getMsg());
-        po.setTime(approvalInfo.getTime());
+        po.setApproveTime(approvalInfo.getApproveTime());
         return po;
     }
 
-    private ApprovalInfo approvalInfoFromPo(ApprovalInfoPo approvalInfoPo){
-        ApprovalInfo approvalInfo = new ApprovalInfo();
-        approvalInfo.setApprovalInfoId(approvalInfoPo.getApprovalInfoId());
-        Approver approver = Approver.builder()
-                .personId(approvalInfoPo.getApproverId())
-                .personName(approvalInfoPo.getApproverName())
-                .level(approvalInfoPo.getApproverLevel())
-                .build();
-        approvalInfo.setApprover(approver);
-        approvalInfo.setMsg(approvalInfoPo.getMsg());
-        approvalInfo.setTime(approvalInfoPo.getTime());
+    public  ApprovalInfo approvalInfoDoFromPo(ApprovalInfoPo approvalInfoPo) {
+        Approver approver = null;
+        if (Objects.nonNull(approvalInfoPo.getApproverId()) && Objects.nonNull(approvalInfoPo.getApproverName())) {
+            approver = new Approver(approvalInfoPo.getApproverId(), approvalInfoPo.getApproverName());
+        }
+        ApprovalInfo approvalInfo = new ApprovalInfo(approvalInfoPo.getSeq(), approver,
+                ApprovalType.fromName(approvalInfoPo.getApprovalType()), approvalInfoPo.getMsg(), approvalInfoPo.getApproveTime());
+        approvalInfo.setId(approvalInfoPo.getId());
+        approvalInfo.setCreateTime(approvalInfoPo.getCreateTime());
+        approvalInfo.setLastModifyTime(approvalInfoPo.getLastModifyTime());
+        approvalInfo.setDeleteTime(approvalInfoPo.getDeleteTime());
         return approvalInfo;
     }
 
-    private List<ApprovalInfo> getApprovalInfos(List<ApprovalInfoPo> approvalInfoPoList){
+    public List<ApprovalInfo> approvalInfoDosFromPos(List<ApprovalInfoPo> approvalInfoPoList) {
+        if (CollectionUtils.isEmpty(approvalInfoPoList)) {
+            return null;
+        }
         return approvalInfoPoList.stream()
-                .map(this::approvalInfoFromPo)
+                .map(this::approvalInfoDoFromPo)
                 .collect(Collectors.toList());
     }
 }

@@ -1,10 +1,10 @@
 package org.example.common.repository;
 
-import java.time.LocalDateTime;
+import lombok.Data;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import java.time.LocalDateTime;
 
 /**
  * @author
@@ -12,10 +12,8 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 public class BaseEntity {
     @Id
-    @GenericGenerator(name = "idGenerator", strategy = "uuid")
     @GeneratedValue(generator = "idGenerator")
-    private String id;
-
+    private Integer id;
 
     private LocalDateTime createTime;
 

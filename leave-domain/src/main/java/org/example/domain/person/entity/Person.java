@@ -1,54 +1,42 @@
 package org.example.domain.person.entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.example.common.domain.AggregateRoot;
-import org.example.shared.person.enums.PersonStatus;
-import org.example.shared.person.enums.PersonType;
+import org.example.domain.person.entity.valueobject.Address;
 import org.example.util.DateUtil;
-import org.springframework.util.CollectionUtils;
+
+import java.time.LocalDateTime;
 
 /**
  * @author sherry
  */
 @EqualsAndHashCode(callSuper = true)
-@Data
 public class Person extends AggregateRoot {
 
+    @Getter
     private String personName;
 
-    private PersonType personType;
+    @Getter
+    private Integer leaderId;
 
-    private int roleLevel;
-
-    private PersonStatus status;
-
-
-
-    private List<Relationship> relationships;
+    @Getter
+    private Address address;
 
 
-    public void init() {
+    public Person(String personName, Address address) {
+        this.personName = personName;
+        this.address = address;
         this.setCreateTime(LocalDateTime.now());
         this.setLastModifyTime(LocalDateTime.now());
         this.setDeleteTime(DateUtil.DEFAULT_DATE_TIME);
-        this.relationships = null;
-        this.status = PersonStatus.ENABLE;
     }
 
-
-    public void enable() {
-        markModify();
-        this.status = PersonStatus.ENABLE;
+    public Person(Integer leaderId, String personName, Address address) {
+        this(personName, address);
+        this.leaderId = leaderId;
     }
 
-
-    public void disable() {
-        markModify();
-        this.status = PersonStatus.DISABLE;
-    }
 
     public void markModify() {
         this.setLastModifyTime(LocalDateTime.now());
@@ -58,7 +46,11 @@ public class Person extends AggregateRoot {
         this.setDeleteTime(LocalDateTime.now());
     }
 
-    public void addSubordinate(Person subordinate) {
-        if (CollectionUtils.isEmpty(relationships))
+    public void changeLeader(Integer leaderId) {
+        this.leaderId = leaderId;
+        markModify();
+
     }
+
+
 }

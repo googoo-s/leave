@@ -19,7 +19,7 @@ public class DateUtil {
     }
 
     public static LocalDateTime parseDateTime(String dateTimeStr) throws ParseException {
-        return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT);
+        return LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT));
     }
 
     public static String formatDate(LocalDate date) {

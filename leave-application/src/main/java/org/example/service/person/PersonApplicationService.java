@@ -1,13 +1,16 @@
 package org.example.service.person;
 
-import java.text.ParseException;
-import java.util.Objects;
-import org.example.assembler.person.PersonAssembler;
 import org.example.domain.person.entity.Person;
+import org.example.domain.person.entity.valueobject.Address;
 import org.example.domain.person.service.PersonDomainService;
-import org.example.types.auth.PersonDto;
+import org.example.types.person.ro.CreatePersonRo;
+import org.example.types.person.vo.LeaderLineVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author sherry
@@ -18,27 +21,31 @@ public class PersonApplicationService {
     @Autowired
     PersonDomainService personDomainService;
 
-    public void create(PersonDto personDto) throws ParseException {
-        if (Objects.nonNull(personDto.getId())) {
-            throw new RuntimeException("不能包含ID");
-        }
-        personDomainService.create(PersonAssembler.toDO(personDto));
+    public void create(CreatePersonRo createPersonRo) {
+        personDomainService.create(createPersonRo.getPersonName(), Address.builder()
+                .province(createPersonRo.getProvince())
+                .city(createPersonRo.getCity())
+                .exactAddress(createPersonRo.getExactAddress())
+                .build());
     }
 
-    public void update(PersonDto personDto) throws ParseException {
-        personDomainService.update(PersonAssembler.toDO(personDto));
+    public void changeLeader(Integer subordinateId, Integer leaderId) {
+        personDomainService.changeLeader(subordinateId, leaderId);
+
     }
 
-    public void deleteById(String personId) {
-        personDomainService.deleteById(personId);
-    }
 
-    public PersonDto findById(String personId) {
-        return null;
-    }
-
-    public PersonDto findFirstApprover(String applicantId, int leaderMaxLevel) {
-        Person firstApprover = personDomainService.findFirstApprover(applicantId, leaderMaxLevel);
-        return PersonAssembler.toDTO(firstApprover);
+    public List<LeaderLineVo> getLeaderLine(Integer personId) {
+        List<Person> allLeaderLine = personDomainService.getAllLeaderLine(personId);
+        return allLeaderLine.stream().map(person ->
+                LeaderLineVo.builder()
+                        .id(person.getLeaderId())
+                        .personName(person.getPersonName())
+                        .leaderId(person.getLeaderId())
+                        .province(Optional.ofNullable(person.getAddress()).map(Address::getProvince).orElse(null))
+                        .city(Optional.of(person.getAddress()).map(Address::getProvince).orElse(null))
+                        .exactAddress(Optional.of(person.getAddress()).map(Address::getExactAddress).orElse(null))
+                        .build()
+        ).collect(Collectors.toList());
     }
 }
