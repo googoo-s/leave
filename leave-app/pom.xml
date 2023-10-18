@@ -23,10 +23,10 @@
       <groupId>org.example</groupId>
       <artifactId>leave-trigger</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.example</groupId>
-      <artifactId>leave-infrastructure</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.example</groupId>-->
+<!--      <artifactId>leave-infrastructure</artifactId>-->
+<!--    </dependency>-->
 
   </dependencies>
 

@@ -39,7 +39,7 @@ public class PersonApplicationService {
         List<Person> allLeaderLine = personDomainService.getAllLeaderLine(personId);
         return allLeaderLine.stream().map(person ->
                 LeaderLineVo.builder()
-                        .id(person.getLeaderId())
+                        .id(person.getId())
                         .personName(person.getPersonName())
                         .leaderId(person.getLeaderId())
                         .province(Optional.ofNullable(person.getAddress()).map(Address::getProvince).orElse(null))

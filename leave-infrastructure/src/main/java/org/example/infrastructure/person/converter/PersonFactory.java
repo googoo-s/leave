@@ -33,6 +33,7 @@ public class PersonFactory {
                 .exactAddress(po.getExactAddress())
                 .build();
         Person person = new Person(po.getLeaderId(),po.getPersonName(),address);
+        person.setId(po.getId());
         person.setCreateTime(po.getCreateTime());
         person.setLastModifyTime(po.getLastModifyTime());
         person.setDeleteTime(po.getDeleteTime());

@@ -1,5 +1,6 @@
 package org.example.controller.leave;
 
+import feign.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.example.service.leave.LeaveApplicationService;
 import org.example.types.common.Response;
@@ -63,6 +64,13 @@ public class LeaveController {
     @PostMapping("/query/approver/{approverId}")
     public Response<List<LeaveVo>> queryByApprover(@PathVariable(value = "approverId") Integer approverId) {
         List<LeaveVo> leaveList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
+        return Response.<List<LeaveVo>>ok(leaveList);
+    }
+
+
+    @PostMapping("/query/approver_name")
+    public Response<List<LeaveVo>> queryByApproverName(@RequestParam(value = "name") String approverName) {
+        List<LeaveVo> leaveList = leaveApplicationService.queryByApproverName(approverName);
         return Response.<List<LeaveVo>>ok(leaveList);
     }
 }

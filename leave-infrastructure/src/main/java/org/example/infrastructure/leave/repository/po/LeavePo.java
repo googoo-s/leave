@@ -13,7 +13,7 @@ import lombok.Data;
  * @author sherry
  */
 @Entity
-@Table(name = "leave")
+@Table(name = "leaved")
 @Data
 public class LeavePo {
     @Id

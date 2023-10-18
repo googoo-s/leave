@@ -2,8 +2,9 @@ package org.example.domain.leave.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Getter;
 import org.example.common.domain.AggregateRoot;
 import org.example.domain.leave.entity.valueobject.Applicant;
@@ -32,13 +33,15 @@ public class Leave extends AggregateRoot {
     private List<ApprovalInfo> historyApprovalInfos;
 
 
-    public Leave(Applicant applicant, Approver approver, String content, LocalDate startTime, LocalDate endTime, int maxAgreeCount) {
+    public Leave(Applicant applicant, Approver approver, String content, LocalDate startTime, LocalDate endTime,
+                 int maxAgreeCount) {
         this(applicant, approver, content,
                 maxAgreeCount == 0 ? Status.APPROVED : Status.APPROVING,
                 startTime, endTime, maxAgreeCount, null);
     }
 
-    public Leave(Applicant applicant, Approver approver, String content, Status status, LocalDate startTime, LocalDate endTime, int maxAgreeCount, List<ApprovalInfo> historyApprovalInfos) {
+    public Leave(Applicant applicant, Approver approver, String content, Status status, LocalDate startTime,
+                 LocalDate endTime, int maxAgreeCount, List<ApprovalInfo> historyApprovalInfos) {
         this.applicant = applicant;
         this.approver = approver;
         this.content = content;
@@ -60,16 +63,16 @@ public class Leave extends AggregateRoot {
     }
 
 
-
-
-    public ApprovalInfo agree(Approver approver, Approver nextApprover, String msg) {
+    public ApprovalInfo agree(Approver currentApprover, Approver nextApprover, String msg) {
         if (Arrays.asList(Status.REJECTED, Status.APPROVED).contains(status)) {
             throw new RuntimeException("已经审核完成了");
         }
-        if (!approver.getPersonId().equals(approver.getPersonId())) {
+        if (!approver.getPersonId().equals(currentApprover.getPersonId())) {
             throw new RuntimeException("你不能审核");
         }
-        ApprovalInfo info = new ApprovalInfo(historyApprovalInfos.size() + 1, approver, ApprovalType.AGREE, msg, LocalDateTime.now());
+        int infoSize = CollectionUtils.isEmpty(historyApprovalInfos) ? 0 : historyApprovalInfos.size();
+        ApprovalInfo info = new ApprovalInfo(infoSize + 1, currentApprover, ApprovalType.AGREE, msg,
+                LocalDateTime.now());
         addHistory(info);
         approver = nextApprover;
         if (historyApprovalInfos.size() == maxAgreeCount) {
@@ -87,7 +90,9 @@ public class Leave extends AggregateRoot {
             throw new RuntimeException("你不能审核");
         }
 
-        ApprovalInfo info = new ApprovalInfo(historyApprovalInfos.size() + 1, approver, ApprovalType.REJECT, msg, LocalDateTime.now());
+        int infoSize = CollectionUtils.isEmpty(historyApprovalInfos) ? 0 : historyApprovalInfos.size();
+
+        ApprovalInfo info = new ApprovalInfo(infoSize + 1, approver, ApprovalType.REJECT, msg, LocalDateTime.now());
         addHistory(info);
         approver = null;
         this.status = Status.REJECTED;

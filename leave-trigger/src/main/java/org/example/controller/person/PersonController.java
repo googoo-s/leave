@@ -23,7 +23,7 @@ public class PersonController {
     PersonApplicationService personApplicationService;
 
     @PostMapping
-    public Response<?> create(CreatePersonRo createPersonRo) {
+    public Response<?> create(@RequestBody CreatePersonRo createPersonRo) {
         personApplicationService.create(createPersonRo);
         return Response.ok();
     }

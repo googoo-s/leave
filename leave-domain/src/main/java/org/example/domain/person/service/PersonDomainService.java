@@ -36,7 +36,7 @@ public class PersonDomainService {
 
 
     private void changeLeader(Person subordinate, Person leader) {
-        subordinate.changeLeader(leader.getLeaderId());
+        subordinate.changeLeader(leader.getId());
         personRepository.save(subordinate);
     }
 
@@ -63,6 +63,9 @@ public class PersonDomainService {
         Person itar = person;
         while (Objects.nonNull(person.getLeaderId())) {
             Person leader = findLeader(itar);
+            if (Objects.isNull(leader)) {
+                break;
+            }
             itar = leader;
             resultList.add(leader);
         }
@@ -74,6 +77,9 @@ public class PersonDomainService {
         Person itar = person;
         while (Objects.nonNull(person.getLeaderId()) && count > 0) {
             Person leader = findLeader(itar);
+            if (Objects.isNull(leader)) {
+                break;
+            }
             itar = leader;
             resultList.add(leader);
             count--;

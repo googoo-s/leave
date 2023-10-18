@@ -1,12 +1,18 @@
 package org.example.service.leave;
 
 import com.alibaba.fastjson.JSON;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.example.domain.leave.LeaveDomainService;
 import org.example.domain.leave.entity.Leave;
 import org.example.domain.leave.entity.valueobject.Applicant;
 import org.example.domain.leave.entity.valueobject.Approver;
 import org.example.domain.person.entity.Person;
 import org.example.domain.person.service.PersonDomainService;
+import org.example.infrastructure.leave.repository.mapper.LeaveDao;
 import org.example.shared.leave.enums.Status;
 import org.example.types.leave.ro.CreateLeaveRo;
 import org.example.types.leave.ro.SubmitApprovalRo;
@@ -14,11 +20,6 @@ import org.example.types.leave.vo.LeaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author sherry
@@ -29,10 +30,13 @@ public class LeaveApplicationService {
     private static final int APPROVE_LEVEL_NUM = 2;
 
     @Autowired
-    LeaveDomainService leaveDomainService;
+    private LeaveDomainService leaveDomainService;
 
     @Autowired
-    PersonDomainService personDomainService;
+    private PersonDomainService personDomainService;
+
+    @Autowired
+    private LeaveDao leaveDao;
 
 
     public void createLeaveInfo(CreateLeaveRo createLeaveRo) {
@@ -50,7 +54,8 @@ public class LeaveApplicationService {
             approver = new Approver(person.getId(), person.getPersonName());
             maxAgreeCount = leaderLine.size();
         }
-        leaveDomainService.createLeave(applicant, approver, createLeaveRo.getContent(), createLeaveRo.getStartTime(), createLeaveRo.getEndTime(), maxAgreeCount);
+        leaveDomainService.createLeave(applicant, approver, createLeaveRo.getContent(), createLeaveRo.getStartTime(),
+                createLeaveRo.getEndTime(), maxAgreeCount);
     }
 
 
@@ -73,9 +78,12 @@ public class LeaveApplicationService {
             throw new RuntimeException("用户不存在");
         }
         Approver approver = new Approver(approverPerson.getId(), approverPerson.getPersonName());
-        Person newApproverPerson = personDomainService.findNextApprover(approverPerson, leave.getMaxAgreeCount() - approvedNum);
-        Approver nextApprover = new Approver(newApproverPerson.getId(), newApproverPerson.getPersonName());
-        leaveDomainService.submitApproval(leave, approver, nextApprover,submitApprovalRo.getApprovalType(),submitApprovalRo.getMsg());
+        Person newApproverPerson =
+                personDomainService.findNextApprover(approverPerson, leave.getMaxAgreeCount() - approvedNum);
+        Approver nextApprover = Objects.isNull(newApproverPerson) ? null :
+                new Approver(newApproverPerson.getId(), newApproverPerson.getPersonName());
+        leaveDomainService.submitApproval(leave, approver, nextApprover, submitApprovalRo.getApprovalType(),
+                submitApprovalRo.getMsg());
     }
 
     public LeaveVo getLeaveInfo(Integer leaveId) {
@@ -91,5 +99,13 @@ public class LeaveApplicationService {
     public List<LeaveVo> queryLeaveInfosByApprover(Integer approverId) {
         List<Leave> leaves = leaveDomainService.queryLeaveInfosByApprover(approverId);
         return JSON.parseArray(JSON.toJSONString(leaves), LeaveVo.class);
+    }
+
+    public List<LeaveVo> queryByApproverName(String approverName) {
+        List<Integer> ids = leaveDao.queryIdApprovedByApproverName(approverName);
+        List<Leave> leaves = ids.stream().map(leaveDomainService::getLeaveInfo)
+                .collect(Collectors.toList());
+        return JSON.parseArray(JSON.toJSONString(leaves), LeaveVo.class);
+
     }
 }

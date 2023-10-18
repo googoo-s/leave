@@ -36,6 +36,11 @@
       <artifactId>leave-application-types</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.example</groupId>
+      <artifactId>leave-infrastructure</artifactId>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

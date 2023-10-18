@@ -34,6 +34,7 @@ public class LeaveFactory {
         leavePo.setApproverName(Optional.ofNullable(leave.getApprover()).map(Approver::getPersonName).orElse(null));
         leavePo.setContent(leave.getContent());
         leavePo.setStartTime(leave.getStartTime());
+        leavePo.setEndTime(leave.getEndTime());
         leavePo.setStatus(leave.getStatus().name());
         leavePo.setMaxAgreeCount(leave.getMaxAgreeCount());
         return leavePo;

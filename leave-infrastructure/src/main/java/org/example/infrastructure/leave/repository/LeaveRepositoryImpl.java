@@ -34,7 +34,7 @@ public class LeaveRepositoryImpl implements LeaveRepository {
         leaveDao.save(leavePo);
         if (!CollectionUtils.isEmpty(leave.getHistoryApprovalInfos())) {
             List<ApprovalInfoPo> approvalInfoPoList = leave.getHistoryApprovalInfos().stream()
-                    .map(approvalInfoPO -> leaveFactory.approvalInfoPoFromDo(leavePo, approvalInfoPO))
+                    .map(approvalInfoPo -> leaveFactory.approvalInfoPoFromDo(leavePo, approvalInfoPo))
                     .collect(Collectors.toList());
             approvalInfoDao.saveAll(approvalInfoPoList);
         }
