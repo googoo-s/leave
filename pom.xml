@@ -27,6 +27,7 @@
         <postgresql.version>42.2.27</postgresql.version>
         <fastjson.version>1.2.70</fastjson.version>
         <lombok.version>1.18.4</lombok.version>
+        <spring.fox.version>3.0.0</spring.fox.version>
     </properties>
 
     <dependencyManagement>

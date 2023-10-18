@@ -10,7 +10,7 @@
   <artifactId>leave-application-types</artifactId>
   <packaging>jar</packaging>
 
-  <name>leave-tirgger-types</name>
+  <name>leave-application-types</name>
   <url>http://maven.apache.org</url>
 
   <properties>

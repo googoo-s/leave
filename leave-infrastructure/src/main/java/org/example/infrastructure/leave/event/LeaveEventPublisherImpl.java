@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LeaveEventPublisherImpl implements LeaveEventPublisher {
     @Override
-    public void publish(LeaveEvent event) {
+    public void publish(final LeaveEvent event) {
         //send to MQ
         //mq.send(event);
     }

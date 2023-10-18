@@ -28,6 +28,7 @@ public class LeaveRepositoryImpl implements LeaveRepository {
     LeaveFactory leaveFactory;
 
 
+    @Override
     public void save(Leave leave) {
         LeavePo leavePo = leaveFactory.leavePoFromDo(leave);
         leaveDao.save(leavePo);
