@@ -5,6 +5,9 @@ import org.example.infrastructure.leave.repository.po.LeavePo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * @author sherry
+ */
 @Repository
 public interface LeaveDao extends JpaRepository<LeavePo, Integer> {
 

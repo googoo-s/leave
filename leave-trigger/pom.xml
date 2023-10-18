@@ -10,7 +10,7 @@
   <artifactId>leave-trigger</artifactId>
   <packaging>jar</packaging>
 
-  <name>leave-tigger</name>
+  <name>leave-trigger</name>
   <url>http://maven.apache.org</url>
 
   <properties>

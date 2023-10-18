@@ -1,19 +1,27 @@
 package org.example.infrastructure.leave.repository.po;
 
-import lombok.Data;
-import org.example.common.repository.BaseEntity;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.Data;
 
 /**
  * @author sherry
  */
 @Entity
-@Table(name = "Leave")
+@Table(name = "leave")
 @Data
-public class LeavePo extends BaseEntity {
+public class LeavePo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private LocalDateTime createTime;
+    private LocalDateTime lastModifyTime;
+    private LocalDateTime deleteTime;
     private Integer applicantId;
     private String applicantName;
     private Integer approverId;

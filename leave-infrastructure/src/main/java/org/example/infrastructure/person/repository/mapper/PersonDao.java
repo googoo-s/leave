@@ -11,6 +11,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PersonDao extends JpaRepository<PersonPo, Integer> {
 
-    @Query(value = "select p from PersonPO  p where p.relationshipPO.personId=?1")
-    PersonPo findLeaderByPersonId(String personId);
 }
